@@ -4,14 +4,39 @@ const hubsRouter = require('./hubs/hubs-router.js');
 
 const server = express();
 
+// Middlewares
+
+function customMorgan(req, res, next) {
+  console.log(`hey a ${req.method} request made`);
+  next();
+}
+
+function shortCircuit(req, res, next) {
+  res.json('the request was short cicuited');
+}
+
+function addFriend(req, res, next) {
+  req.friend = 'Lady G';
+  next();
+}
+
+// Middlewares  
+
+// Order matter!!
+
 server.use(express.json());
 server.use(morgan('dev'));
+server.use(customMorgan);
+// server.use(shortCircuit);
+server.use(addFriend);
+
+// Order matter!!
 
 server.use('/api/hubs', hubsRouter);
 
 server.get('/', (req, res) => {
   res.send(`
-    <h2>Hubs API</h2>
+    <h2>Hubs API ${req.friend}</h2>
     <p>Welcome to the Hubs API</p>
   `);
 });
